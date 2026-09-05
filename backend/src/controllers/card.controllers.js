@@ -29,6 +29,75 @@ const createCard=async (req,res)=>{
             });
     }
 }
+const allCards=async (req,res)=>{
+     try{
+        const user=await User.findById(req.user.id);
+        if(!user){
+            return res.status(400).json({
+                message:"invalid user"
+            });
+        }
+        return res.status(200).json({
+            allCards:user.cards,
+        });
+     }
+     catch(error){
+        return res.status(500).json({
+                message:"error while fetching cards",
+                error:error.message,
+            }); 
+     }
+}
+const updateCard=async (req,res)=>{
+    try{
+        const {description}=req.body;
+        const updatedCard=await User.findByIdAndUpdate(req.user.id,{
+        description:description},
+        {new:true},
+       );
+       if(!updatedCard){
+        return res.status(400).json({
+                message:"invalid user"
+            });
+       }
+      return res.status(200).json({
+        updatedCard
+      });
+
+    }
+    catch(error){
+        return res.status(500).json({
+                message:"error while updating cards",
+                error:error.message,
+            }); 
+     }
+    
+}
+const deleteCard=async(req,res)=>{
+    try{
+        const cardId=req.params;
+        const deletedCard=await User.findByIdAndUpdate(req.user.id,{
+            $pull:{cards:{_id:cardId}}
+        },
+        {new:true})
+        if(!deleteCard){
+        return res.status(400).json({
+                message:"invalid user"
+            });
+       }
+
+        return res.status(200).json({
+        deletedCard
+      });
+    
+    }
+    catch(error){
+        return res.status(500).json({
+                message:"error while deleting cards",
+                error:error.message,
+            }); 
+     }
+}
 
 
-export {createCard}
+export {createCard,allCards,updateCard,deleteCard}
