@@ -3,7 +3,8 @@ import User from "../models/user.models.js"
 
 const createCard=async (req,res)=>{
     try{
-        const user=await User.findById(req.user.id);
+        
+        const user=await User.findById(req.user._id);
         const {description}=req.body;
         if(!description){
             return res.status(400).json({
@@ -17,7 +18,7 @@ const createCard=async (req,res)=>{
         user.cards.push(card);
         await user.save();
         await card.save();
-        return res.status(400).json({
+        return res.status(200).json({
             card,
             message:"crad created successfully"
         });
@@ -31,7 +32,7 @@ const createCard=async (req,res)=>{
 }
 const allCards=async (req,res)=>{
      try{
-        const user=await User.findById(req.user.id);
+        const user=await User.findById(req.user._id);
         if(!user){
             return res.status(400).json({
                 message:"invalid user"
@@ -51,7 +52,7 @@ const allCards=async (req,res)=>{
 const updateCard=async (req,res)=>{
     try{
         const {description}=req.body;
-        const updatedCard=await User.findByIdAndUpdate(req.user.id,{
+        const updatedCard=await User.findByIdAndUpdate(req.user._id,{
         description:description},
         {new:true},
        );
@@ -76,7 +77,7 @@ const updateCard=async (req,res)=>{
 const deleteCard=async(req,res)=>{
     try{
         const cardId=req.params;
-        const deletedCard=await User.findByIdAndUpdate(req.user.id,{
+        const deletedCard=await User.findByIdAndUpdate(req.user._id,{
             $pull:{cards:{_id:cardId}}
         },
         {new:true})
@@ -98,6 +99,29 @@ const deleteCard=async(req,res)=>{
             }); 
      }
 }
+const tick=async(req,res)=>{
+    try{
+        const cardId=req.params;
+        const card=Card.findById(cardId);
+        if(!card){
+            return res.status(400).json({
+                message:"invalid user"
+            });
+        }
+        card.isCompleted=!card.isCompleted;
+        await card.save();
+        return res.status(200).json({
+        cardStatus:card.isCompleted
+        });
+        
+    }
+    catch(error){
+        return res.status(500).json({
+                message:"error while toggling cards",
+                error:error.message,
+            }); 
+     }
+}
 
 
-export {createCard,allCards,updateCard,deleteCard}
+export {createCard,allCards,updateCard,deleteCard,tick}
