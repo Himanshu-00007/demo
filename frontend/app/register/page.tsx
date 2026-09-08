@@ -1,5 +1,4 @@
 "use client"
-import type { FormEvent } from "react";
 import {useEffect} from "react";
 import {useState} from "react";
 import axios from "axios";
@@ -7,19 +6,22 @@ const register=()=>{
     const [name,setName]=useState("");
     const [email,setEmail]=useState("");
     const [password,setPassword]=useState("");
-    const handleSubmit=(e: FormEvent<HTMLFormElement>)=>{
+    const handleSubmit=(e: React.FormEvent)=>{
         e.preventDefault();
-        const formData=new FormData();
-        formData.append("name",name);
-        formData.append("email",email);
-        formData.append("password",password);
-            axios.post("http://localhost:1000/api/v1/users/register",formData)
+        const payload = {
+            name: name,
+            email: email,
+            password: password
+        };
+            axios.post("http://localhost:1000/api/v1/users/register", payload, {
+            withCredentials: true 
+        })
             .then((res)=>{
                 console.log(res.data);
 
             })
             .catch((error)=>{
-                console.error(error.message);
+                console.error(error);
             })
     }
     return (

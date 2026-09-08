@@ -1,24 +1,34 @@
+"use client"
 import {useState} from "react";
-import type { FormEvent } from "react";
+import {useRouter} from "next/navigation";
 import axios from "axios"
 
 const login=()=>{
+const router=useRouter();
 const [email,setEmail]=useState("");
 const [password,setPassword]=useState("");
-const handleLogin=((e:FormEvent<HTMLFormElement>)=>{
+const handleLogin=async(e:React.FormEvent)=>{
     e.preventDefault();
-    const formData=new FormData();
-    formData.append("email",email);
-    formData.append("password",password);
-    axios.post("http://localhost:1000/api/v1/users/login",formData)
-    .then((res)=>{
-        console.log(res.data);
-    })
-    .catch((error)=>{
-        console.error(error.message);
-    })
+    try{
+        const payload={
+            email:email,
+            password:password,
+        }
 
-})
+        const res=await axios.post("http://localhost:1000/api/v1/users/login",payload,{
+            withCredentials:true
+        });
+        const token=res.data.token;
+        localStorage.setItem("token",token);
+        router.push("/dashboard");
+
+    }
+    catch(error){
+        console.error("login failed",error);
+    }
+    
+
+}
 
     return (
         <>
