@@ -32,7 +32,7 @@ const createCard=async (req,res)=>{
 }
 const allCards=async (req,res)=>{
      try{
-        const user=await User.findById(req.user._id);
+        const user=await User.findById(req.user._id).populate("cards");
         if(!user){
             return res.status(400).json({
                 message:"invalid user"
@@ -101,8 +101,8 @@ const deleteCard=async(req,res)=>{
 }
 const tick=async(req,res)=>{
     try{
-        const cardId=req.params;
-        const card=Card.findById(cardId);
+        const {cardId}=req.params;
+        const card=await Card.findById(cardId);
         if(!card){
             return res.status(400).json({
                 message:"invalid user"

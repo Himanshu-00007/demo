@@ -86,6 +86,7 @@ const loginUser=async(req,res)=>{
         .cookie("refreshToken",refreshToken,options)
         .json({
             user,
+            token,
             message:"user login successfully"
         });
 
